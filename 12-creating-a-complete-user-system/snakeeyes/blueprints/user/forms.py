@@ -1,7 +1,8 @@
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms import HiddenField, StringField, PasswordField
 from wtforms.validators import DataRequired, Length, Optional, Regexp
-from wtforms_components import EmailField, Email, Unique
+from wtforms_components import EmailField, Email
+from wtforms_alchemy import Unique
 
 from lib.util_wtforms import ModelForm
 from snakeeyes.blueprints.user.models import User, db
@@ -9,7 +10,7 @@ from snakeeyes.blueprints.user.validations import ensure_identity_exists, \
     ensure_existing_password_matches
 
 
-class LoginForm(Form):
+class LoginForm(FlaskForm):
     next = HiddenField()
     identity = StringField('Username or email',
                            [DataRequired(), Length(3, 254)])
@@ -17,14 +18,14 @@ class LoginForm(Form):
     # remember = BooleanField('Stay signed in')
 
 
-class BeginPasswordResetForm(Form):
+class BeginPasswordResetForm(FlaskForm):
     identity = StringField('Username or email',
                            [DataRequired(),
                             Length(3, 254),
                             ensure_identity_exists])
 
 
-class PasswordResetForm(Form):
+class PasswordResetForm(FlaskForm):
     reset_token = HiddenField()
     password = PasswordField('Password', [DataRequired(), Length(8, 128)])
 

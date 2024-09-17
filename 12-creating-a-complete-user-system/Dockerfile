@@ -1,5 +1,4 @@
-FROM python:3.7.5-slim-buster
-MAINTAINER Nick Janetakis <nick.janetakis@gmail.com>
+FROM python:3.11-slim
 
 RUN apt-get update && apt-get install -qq -y \
   build-essential libpq-dev --no-install-recommends
@@ -10,7 +9,7 @@ RUN mkdir -p $INSTALL_PATH
 WORKDIR $INSTALL_PATH
 
 COPY requirements.txt requirements.txt
-RUN pip install -r requirements.txt
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
 COPY . .
 RUN pip install --editable .

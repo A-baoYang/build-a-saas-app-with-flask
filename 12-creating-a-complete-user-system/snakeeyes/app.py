@@ -101,12 +101,23 @@ def authentication(app, user_model):
     def load_user(uid):
         return user_model.query.get(uid)
 
-    @login_manager.token_loader
-    def load_token(token):
-        duration = app.config['REMEMBER_COOKIE_DURATION'].total_seconds()
-        serializer = URLSafeTimedSerializer(app.secret_key)
+    # @login_manager.request_loader
+    # def load_token(token):
+    #     duration = app.config['REMEMBER_COOKIE_DURATION'].total_seconds()
+    #     serializer = URLSafeTimedSerializer(app.secret_key)
 
-        data = serializer.loads(token, max_age=duration)
-        user_uid = data[0]
+    #     data = serializer.loads(token, max_age=duration)
+    #     user_uid = data[0]
 
-        return user_model.query.get(user_uid)
+    #     return user_model.query.get(user_uid)
+
+    @login_manager.request_loader
+    def load_user_from_request(request):
+        auth_str = request.headers.get("Authorization")
+        token = auth_str.split(" ")[1] if auth_str else ""
+        if token:
+            user_id = user_model.decode_token(token)
+            user = user_model.query.get(int(user_id))
+            if user:
+                return user
+        return None
